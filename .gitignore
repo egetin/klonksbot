@@ -15,3 +15,6 @@
 
 # Vim swap files
 *.swp
+
+# Project binary
+klonksbot
