@@ -18,3 +18,6 @@
 
 # Project binary
 klonksbot
+
+# Configuration file
+config.toml

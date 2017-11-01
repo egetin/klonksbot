@@ -9,37 +9,28 @@ import (
 	irc "github.com/fluffle/goirc/client"
 
 	"github.com/egetin/klonksbot/commands"
+	"github.com/egetin/klonksbot/config"
 	"github.com/egetin/klonksbot/events"
-)
-
-// Configuration
-// TODO: Parse configuration from a separate file
-const (
-	NICK     = "Klonkswagen"
-	IDENT    = "klonkswagen"
-	REALNAME = "Klonkswagen The Bot"
-	SERVER   = "open.ircnet.net"
-	PORT     = "6667"
-	QUITMSG  = "Goodbye cruel world ;_;"
-	CHANNEL  = "#egetestaa"
 )
 
 func main() {
 	fmt.Println("Starting Klonkswagen")
 
-	// Initialize configuration
-	cfg := irc.NewConfig(NICK, IDENT, REALNAME)
-	cfg.SSL = false
-	cfg.Server = fmt.Sprintf("%s:%s", SERVER, PORT)
+	// Initialize configurations
+	botCfg := config.GetBotConfig()
+
+	cfg := irc.NewConfig(botCfg.Nick, botCfg.Ident, botCfg.RealName)
+	cfg.SSL = botCfg.SSL
+	cfg.Server = fmt.Sprintf("%s:%s", botCfg.Server, botCfg.Port)
 	cfg.NewNick = func(n string) string { return n + "_" }
-	cfg.QuitMessage = QUITMSG
+	cfg.QuitMessage = botCfg.QuitMsg
 
 	// Connect to server
 	c := irc.Client(cfg)
 	quit := make(chan bool)
-	addHandlers(c, quit)
+	addHandlers(c, botCfg, quit)
 
-	fmt.Printf("Connecting to %s:%s\n", SERVER, PORT)
+	fmt.Printf("Connecting to %s:%s\n", botCfg.Server, botCfg.Port)
 	if err := c.Connect(); err != nil {
 		fmt.Printf("Connection error: %s\n", err.Error())
 	}
@@ -49,11 +40,11 @@ func main() {
 	c.Close()
 }
 
-func addHandlers(c *irc.Conn, quit chan bool) {
+func addHandlers(c *irc.Conn, botCfg *config.BotConfig, quit chan bool) {
 	c.HandleFunc(irc.CONNECTED,
 		func(conn *irc.Conn, line *irc.Line) {
 			fmt.Println("Connected.")
-			conn.Join(CHANNEL)
+			conn.Join(botCfg.Channel)
 		})
 
 	c.HandleFunc(irc.DISCONNECTED,

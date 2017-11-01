@@ -1,0 +1,16 @@
+[basic]
+nick      = "Klonksbot"
+ident     = "klonksbot"
+real_name = "IRC bot written in Golang"
+server    = "open.ircnet.net"
+port      = "6667"
+ssl       = false
+quit_msg  = "Goodbye cruel world ;_;"
+channels  = ["#testchannel"]
+
+[database]
+host      = "localhost"
+port      = "5432"
+username  = "klonksbot"
+password  = "notverysecret"
+database  = "klonksbot"
